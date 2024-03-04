@@ -10,7 +10,8 @@ A Discord bot that tracks the online residency hours of TLS staffers.
 	"APP_ID": "<>",
 	"PUBLIC_KEY": "<>",
 	"AUTH": "<>",
-	"CLIENT_ID": "<>"
+	"CLIENT_ID": "<>",
+	"GUILD_ID": "<>"
 }
 ```
 3. Start with `node index.js`
