@@ -8,7 +8,7 @@ const { Client, Events, GatewayIntentBits } = require('discord.js');
 const { BOT_TOKEN } = require('./config.json');
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: 128 }); // REFER TO https://ziad87.net/intents/
 
 // --- start: connect to commands --- //
 client.commands = new Collection();
@@ -33,7 +33,7 @@ for (const folder of commandFolders) {
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
-
+	
 	const command = interaction.client.commands.get(interaction.commandName);
 
 	if (!command) {
@@ -54,6 +54,33 @@ client.on(Events.InteractionCreate, async interaction => {
 });
 
 // --- end: connect to commands --- ///
+
+//TODO: get user_id, check for specific voice channel, get log time
+//TODO: store details in a readable log file
+// --- start: activate when user joins/leaves a voice channel --- //
+client.on("voiceStateUpdate", (gone_user, present_user) => {
+
+		//debugging
+		console.log("VoiceStateUpdate is activated");
+
+		let gone_user_channel = gone_user.channelId;
+		let present_user_channel = present_user.channelId;
+
+		//debugging
+		console.log("gone_user_channel", gone_user_channel);
+		console.log("present_user_channel", present_user_channel);
+
+		if (gone_user_channel == null && present_user_channel != null) {
+		// user joins voice channel
+		console.log("someone joined a voice channel");
+
+		} else if (present_user_channel == null) {
+		// user left voice channel
+		console.log("someone left the voice channel");
+		}
+})
+
+// --- end: activate when user joins/leaves a voice channel --- //
 
 // When the client is ready, run this code (only once).
 // The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
