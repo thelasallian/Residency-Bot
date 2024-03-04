@@ -1,6 +1,9 @@
 # Residency-Bot
 A Discord bot that tracks the online residency hours of TLS staffers.
 
+# Update the commands
+1. Run `node deploy-commands.js`
+
 # Run locally
 1. Run `npm install discord.js`
 2. Create a `config.json` file with the following content
