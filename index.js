@@ -10,6 +10,9 @@ const { BOT_TOKEN } = require('./config.json');
 // Create a new client instance
 const client = new Client({ intents: 128 }); // REFER TO https://ziad87.net/intents/
 
+// Create map for logs
+const users = new Map();
+
 // --- start: connect to commands --- //
 client.commands = new Collection();
 
@@ -55,30 +58,59 @@ client.on(Events.InteractionCreate, async interaction => {
 
 // --- end: connect to commands --- ///
 
-//TODO: get user_id, check for specific voice channel, get log time
-//TODO: store details in a readable log file
+//TODO: check for specific voice channel
+//TODO: make command to download logs.csv file
 // --- start: activate when user joins/leaves a voice channel --- //
+function formatTime(milliseconds) {
+	let hours = Math.floor(milliseconds / (1000 * 60 * 60));
+	let minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+	let seconds = Math.floor((milliseconds % (1000 * 60)) / 1000);
+	return hours + "h " + minutes + "m " + seconds + "s";
+}
+
+// Function to write logs to CSV file
+function writeLogToCSV(username, totalTime) {
+	let logString = username + "," + formatTime(totalTime) + "\n";
+	fs.appendFile('logs.csv', logString, (err) => {
+		if (err) throw err;
+		console.log('Log entry added to logs.csv');
+	});
+}
+
 client.on("voiceStateUpdate", (past, present) => {
 
 		//debugging
 		console.log("VoiceStateUpdate is activated");
 
+		let user = past.member || present.member;
+
 		let past_channel = past.channelId;
 		let present_channel = present.channelId;
 
-		let past_username = past.member.user.username;
-		let present_username = present.member.user.username;
+		let past_user = past.member.user;
+		let present_user = present.member.user;
+		
 
 		// TODO: activate only if user joined/left voice channel 'Residency'
-		if (past_channel_name == true || present_channel_name == true) {
+		if (true) {
 			if (past_channel == null && present_channel != null) {
 				// user joins voice channel
-				console.log(present_username, "joined a voice channel");
+				console.log(present_user.username, "joined a voice channel");
+				users.set(user.id, new Date().getTime());
 		
 				} else if (present_channel == null) {
 				// user left voice channel
-				console.log(past_username, "left the voice channel");
+				console.log(past_user.username, "left the voice channel");
+
+				if (users.get(user.id) != undefined) {
+					let totalTime = new Date().getTime() - users.get(user.id);
+					console.log("Total time: ", formatTime(totalTime));
+
+					//store time in logs
+					writeLogToCSV(past_user.username, totalTime);
 				}
+				}
+				
 		}
 		
 })
