@@ -58,26 +58,29 @@ client.on(Events.InteractionCreate, async interaction => {
 //TODO: get user_id, check for specific voice channel, get log time
 //TODO: store details in a readable log file
 // --- start: activate when user joins/leaves a voice channel --- //
-client.on("voiceStateUpdate", (gone_user, present_user) => {
+client.on("voiceStateUpdate", (past, present) => {
 
 		//debugging
 		console.log("VoiceStateUpdate is activated");
 
-		let gone_user_channel = gone_user.channelId;
-		let present_user_channel = present_user.channelId;
+		let past_channel = past.channelId;
+		let present_channel = present.channelId;
 
-		//debugging
-		console.log("gone_user_channel", gone_user_channel);
-		console.log("present_user_channel", present_user_channel);
+		let past_username = past.member.user.username;
+		let present_username = present.member.user.username;
 
-		if (gone_user_channel == null && present_user_channel != null) {
-		// user joins voice channel
-		console.log("someone joined a voice channel");
-
-		} else if (present_user_channel == null) {
-		// user left voice channel
-		console.log("someone left the voice channel");
+		// TODO: activate only if user joined/left voice channel 'Residency'
+		if (past_channel_name == true || present_channel_name == true) {
+			if (past_channel == null && present_channel != null) {
+				// user joins voice channel
+				console.log(present_username, "joined a voice channel");
+		
+				} else if (present_channel == null) {
+				// user left voice channel
+				console.log(past_username, "left the voice channel");
+				}
 		}
+		
 })
 
 // --- end: activate when user joins/leaves a voice channel --- //
