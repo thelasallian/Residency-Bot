@@ -61,9 +61,6 @@ client.on(Events.InteractionCreate, async interaction => {
 //TODO: check for specific voice channel
 //TODO: make command to download logs.csv file
 // --- start: activate when user joins/leaves a voice channel --- //
-
-// Function to convert timestamp to a readable format
-// Function to format time
 function formatTime(milliseconds) {
 	let hours = Math.floor(milliseconds / (1000 * 60 * 60));
 	let minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
