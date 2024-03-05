@@ -117,11 +117,12 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
   console.log("present11", present.channelId);
 
   // TODO: activate only if user joined/left voice channel 'Residency'
+  // TODO: try not to hardcode this or make a command that will let users set what channel to listen to
   if (true) {
     if (past_channel == null && present_channel != null) {
       // user joins a voice channel
       console.log(present_user.username, "joined a voice channel");
-
+      console.log("The recent channel id is", present.channelId);
       // User joins RESIDENCY voice channel
       if (present.channelId == 1214250569125077003) {
         console.log(present_user.username, "joined a RESIDENCY voice channel");
