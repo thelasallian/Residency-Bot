@@ -5,7 +5,10 @@ A Discord bot that tracks the online residency hours of TLS staffers.
 1. Run `node deploy-commands.js`
 
 # Run locally
-1. Run `npm install discord.js`
+1. Run `npm install discord.js` or `npm install` to install all dependencies.
+	- discord.js
+	- googleapis
+	- dotenv
 2. Create a `config.json` file with the following content
 ```
 {

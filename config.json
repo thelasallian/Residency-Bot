@@ -1,0 +1,8 @@
+{
+    "BOT_TOKEN": "MTIxNDE5MzQ3OTQxNzMzOTkxNQ.GYJ3xQ.IaoZ0V4l9rlPy82YeA-7pudnKDlmGZt0NblQ7E",
+    "APP_ID": "1214193479417339915",
+    "PUBLIC_KEY": "67e2861f6bd8d6d2a9f90fc29f6aa0a6b860ff100c942783db631bfd312a0265",
+    "AUTH": "https://discord.com/oauth2/authorize?client_id=1214193479417339915&permissions=1048576&scope=bot+applications.commands",
+    "CLIENT_ID": "1214193479417339915",
+    "GUILD_ID": "1214199231695421470"
+  }
