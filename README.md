@@ -1,5 +1,5 @@
 # Residency-Bot
-A Discord bot that tracks the online residency hours of TLS staffers.
+A Discord bot that tracks the online residency hours of users via activity in a voice channel.
 
 # Update the commands
 1. Run `node deploy-commands.js`
