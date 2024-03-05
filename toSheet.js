@@ -17,26 +17,30 @@ const googleAuth = new google.auth.JWT(
   "https://www.googleapis.com/auth/spreadsheets"
 );
 
-// async function readSheet() {
-//   try {
-//     // google sheet instance
-//     const sheetInstance = await google.sheets({
-//       version: "v4",
-//       auth: googleAuth,
-//     });
-//     // read data in the range in a sheet
-//     const infoObjectFromSheet = await sheetInstance.spreadsheets.values.get({
-//       auth: googleAuth,
-//       spreadsheetId: googleSheetId,
-//       range: `${googleSheetPage}!A2:A4`,
-//     });
+async function readSheet() {
+  try {
+    // google sheet instance
+    const sheetInstance = await google.sheets({
+      version: "v4",
+      auth: googleAuth,
+    });
+    // read data in the range in a sheet
+    const infoObjectFromSheet = await sheetInstance.spreadsheets.values.get({
+      auth: googleAuth,
+      spreadsheetId: googleSheetId,
+      range: `${googleSheetPage}!A:B`,
+    });
 
-//     const valuesFromSheet = infoObjectFromSheet.data.values;
-//     console.log(valuesFromSheet);
-//   } catch (err) {
-//     console.log("readSheet func() error", err);
-//   }
-// }
+    const valuesFromSheet = infoObjectFromSheet.data.values;
+
+    // store values to array
+    valuesFromSheet.shift(); // remove first row
+    let sheetData = sheetToArray(valuesFromSheet);
+    return sheetData;
+  } catch (err) {
+    console.log("readSheet func() error", err);
+  }
+}
 
 function getCurrentDate() {
   const currentDate = new Date();
@@ -47,18 +51,118 @@ function getCurrentDate() {
   });
 }
 
+function timeToSeconds(time) {
+  const match = time.match(/(\d+)h (\d+)m (\d+)s/);
+  const [, hours, minutes, seconds] = match.map(Number);
+  const timeInSeconds = hours * 3600 + minutes * 60 + seconds;
+  return timeInSeconds;
+}
+
+function secondsToTime(seconds) {
+  const sumHours = Math.floor(seconds / 3600);
+  const sumMinutes = Math.floor((seconds % 3600) / 60);
+  const sumSecondsRemaining = seconds % 60;
+
+  const time = `${sumHours}h ${sumMinutes}m ${sumSecondsRemaining}s`;
+  return time;
+}
+
+function storeDataToday(data, rows, uniqueValues) {
+  for (const value of uniqueValues) {
+    let sum = 0;
+
+    for (const data of rows) {
+      // Convert currentDate to the same format as returned by getCurrentDate
+      let member = data[0];
+      let date = data[2];
+
+      if (member == value && value != "" && date == dateToday) {
+        //convert time to seconds
+        totalTimeInSeconds = timeToSeconds(data[1]);
+        // Add to the sum in seconds
+        sum += totalTimeInSeconds;
+      }
+    }
+
+    // Convert the sum back to "h m s" format
+    sumTime = secondsToTime(sum);
+    console.log("Total Time:", sumTime);
+
+    // Update the sum in the sumData object
+    data.push([value, sumTime]);
+  }
+  return data;
+}
+
+function sheetToArray(valuesFromSheet) {
+  if (valuesFromSheet) {
+    const dataList = [];
+
+    for (const row of valuesFromSheet) {
+      dataList.push(row);
+    }
+    return dataList;
+  } else {
+    console.log("Error pushing data to array.");
+    return [];
+  }
+}
+
+function updateRecord(todayData, sheet) {
+  for (const data of todayData) {
+    let member = data[0];
+    let memberFound = false;
+
+    console.log("Data: ", data);
+
+    for (const row of sheet) {
+      let sheetMember = row[0];
+
+      if (member == sheetMember) {
+        console.log("Member found in row: ", row);
+        memberFound = true;
+        break;
+      }
+    }
+    if (!memberFound) {
+      console.log("Add member to sheet");
+    }
+  }
+}
+
+async function updateSheet(row) {
+  try {
+    // google sheet instance
+    const sheetInstance = await google.sheets({
+      version: "v4",
+      auth: googleAuth,
+    });
+
+    // update data in the range
+    await sheetInstance.spreadsheets.values.update({
+      auth: googleAuth,
+      spreadsheetId: googleSheetId,
+      range: `${googleSheetPage}!A2:D6`,
+      valueInputOption: "RAW",
+      resource: {
+        values: updateToGsheet,
+      },
+    });
+  } catch (err) {
+    console.log("updateSheet func() error", err);
+  }
+}
+
 module.exports = {
-  readCSV: function readCSV() {
+  savetoSheet: async function savetoSheet() {
     try {
       const csvData = fs.readFileSync("./logs.csv", "utf-8"); // Load CSV data from file
       const rows = csvData.split("\n").map((row) => row.split(",")); // CSV to aray
 
-      console.log("Data: ", rows);
-      dateToday = getCurrentDate().toString();
+      dateToday = getCurrentDate().toString(); // get current date and turn to string to compare later
       console.log(dateToday);
 
-      rows.pop();
-      // const uniqueValues = [...new Set(rows.map((row) => row[0]))];    // get unique values from logs
+      rows.pop(); // remove empty string at the end
       const uniqueValues = [
         ...new Set(
           rows
@@ -72,43 +176,25 @@ module.exports = {
         ),
       ];
 
+      console.log("Data: ", rows);
+
       let data = [];
-      for (const value of uniqueValues) {
-        let sum = 0;
 
-        for (const data of rows) {
-          // Convert currentDate to the same format as returned by getCurrentDate
+      // store today's logs to array
+      data = storeDataToday(data, rows, uniqueValues);
 
-          let member = data[0];
-          let date = data[2];
-          if (member == value && value != "" && date == dateToday) {
-            const timeComponents = data[1].split(" ");
-            const hours = parseInt(timeComponents[0]) || 0;
-            const minutes = parseInt(timeComponents[1]) || 0;
-            const seconds = parseInt(timeComponents[2]) || 0;
-
-            const totalTimeInSeconds = hours * 3600 + minutes * 60 + seconds;
-            // Add to the sum in seconds
-            sum += totalTimeInSeconds;
-          }
-        }
-
-        // Convert the sum back to "h m s" format
-        const sumHours = Math.floor(sum / 3600);
-        const sumMinutes = Math.floor((sum % 3600) / 60);
-        const sumSecondsRemaining = sum % 60;
-
-        const formattedSum = `${sumHours}h ${sumMinutes}m ${sumSecondsRemaining}s`;
-
-        console.log("Total Time:", formattedSum);
-
-        // Update the sum in the sumData object
-        data.push([value, formattedSum]);
-      }
-
-      //Perform your desired operation on matching rows
+      // print unique members with logs today
       console.log("unique value:", uniqueValues);
+
+      //print data to update in sheets
       console.log("new data: ", data);
+
+      //read from sheet
+      let sheetData = await readSheet();
+      console.log(sheetData);
+
+      //update sheet
+      updateRecord(data, sheetData);
       return rows;
     } catch (err) {
       console.log("errong reading logs to array", err);

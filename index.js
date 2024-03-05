@@ -6,7 +6,7 @@ const { Collection } = require("discord.js");
 // Require the necessary discord.js classes
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const { BOT_TOKEN } = require("./config.json");
-const { readCSV } = require("./toSheet.js");
+const { savetoSheet } = require("./toSheet.js");
 
 // Create a new client instance
 const client = new Client({ intents: 128 }); // REFER TO https://ziad87.net/intents/
@@ -143,12 +143,13 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
           //  writeLogToCSV(past_user.username, totalTime);
 
           // FOR CHECKING ONLY
-          writeLogToCSV("user1", totalTime, today, (error) => {
+          // past_user.username
+          writeLogToCSV(past_user.username, totalTime, today, (error) => {
             if (error) {
               console.error("Callback error:", error);
             } else {
               // run after async writing on logs (latest log should be recorded)
-              readCSV();
+              savetoSheet();
             }
           });
         }
