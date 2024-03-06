@@ -179,6 +179,26 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
       }
     } else if (present_channel == 1214250569125077003 && past_channel != null) {
       console.log("RPSENT");
+      if (users.get(user.id) != undefined) {
+        const totalTime = new Date().getTime() - users.get(user.id);
+        console.log("Total time: ", formatTime(totalTime));
+        const today = getCurrentDate();
+
+        //store time in logs
+        //  ORIGINAL - change later
+        //  writeLogToCSV(past_user.username, totalTime);
+
+        // FOR CHECKING ONLY
+        // past_user.username
+        writeLogToCSV(past_user.username, totalTime, today, (error) => {
+          if (error) {
+            console.error("Callback error:", error);
+          } else {
+            // run after async writing on logs (latest log should be recorded)
+            savetoSheet();
+          }
+        });
+      }
     }
   }
 });
