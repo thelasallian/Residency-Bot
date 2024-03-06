@@ -118,7 +118,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
 
   // TODO: activate only if user joined/left voice channel 'Residency'
   if (true) {
-    if (past_channel == null && present_channel != null) {
+    if (present_channel != null) {
       // user joins a voice channel
       console.log(present_user.username, "joined a voice channel");
 
