@@ -114,7 +114,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
   let past_user = past.member.user;
   let present_user = present.member.user;
 
-  console.log("present11", present.channelId);
+  console.log("present", present.channelId);
 
   // TODO: activate only if user joined/left voice channel 'Residency'
   if (true) {
@@ -134,7 +134,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
       // User left RESIDENCY voice channel
       if (past.channelId == 1214250569125077003) {
         if (users.get(user.id) != undefined) {
-          let totalTime = new Date().getTime() - users.get(user.id);
+          const totalTime = new Date().getTime() - users.get(user.id);
           console.log("Total time: ", formatTime(totalTime));
           const today = getCurrentDate();
 
@@ -154,6 +154,31 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
           });
         }
       }
+    } else if (present_channel != null && past_channel == 1214250569125077003) {
+      console.log("HELLO");
+
+      if (users.get(user.id) != undefined) {
+        const totalTime = new Date().getTime() - users.get(user.id);
+        console.log("Total time: ", formatTime(totalTime));
+        const today = getCurrentDate();
+
+        //store time in logs
+        //  ORIGINAL - change later
+        //  writeLogToCSV(past_user.username, totalTime);
+
+        // FOR CHECKING ONLY
+        // past_user.username
+        writeLogToCSV(past_user.username, totalTime, today, (error) => {
+          if (error) {
+            console.error("Callback error:", error);
+          } else {
+            // run after async writing on logs (latest log should be recorded)
+            savetoSheet();
+          }
+        });
+      }
+    } else if (present_channel == 1214250569125077003 && past_channel != null) {
+      console.log("RPSENT");
     }
   }
 });

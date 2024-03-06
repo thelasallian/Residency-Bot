@@ -109,28 +109,33 @@ function sheetToArray(valuesFromSheet) {
 }
 
 function updateRecord(todayData, sheet) {
+  let newMembers = 0;
   for (const data of todayData) {
     let member = data[0];
     let memberFound = false;
 
     console.log("Data: ", data);
 
-    for (const row of sheet) {
+    for (const [index, row] of sheet.entries()) {
       let sheetMember = row[0];
 
       if (member == sheetMember) {
         console.log("Member found in row: ", row);
+        console.log("Member found in row index: ", index);
+        updateSheet(data, index + 1); // plus 1 for removing header row
         memberFound = true;
         break;
       }
     }
     if (!memberFound) {
       console.log("Add member to sheet");
+      updateSheet(data, sheet.length + 1 + newMembers); // plus 1 to jump to next empty cell in sheet
+      newMembers += 1; // tracks actual sheet length while on the process of adding new members
     }
   }
 }
 
-async function updateSheet(row) {
+async function updateSheet(row, index) {
   try {
     // google sheet instance
     const sheetInstance = await google.sheets({
@@ -138,14 +143,17 @@ async function updateSheet(row) {
       auth: googleAuth,
     });
 
+    console.log("ROW TO PUT: ", row);
+    index = index + 1; // plus 1 to follow sheet numbering
+
     // update data in the range
     await sheetInstance.spreadsheets.values.update({
       auth: googleAuth,
       spreadsheetId: googleSheetId,
-      range: `${googleSheetPage}!A2:D6`,
+      range: `${googleSheetPage}!A${index}:B`,
       valueInputOption: "RAW",
       resource: {
-        values: updateToGsheet,
+        values: [row],
       },
     });
   } catch (err) {
