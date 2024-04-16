@@ -148,7 +148,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
 
           // FOR CHECKING ONLY
           // past_user.username
-          writeLogToCSV(past_user.username, totalTime, today);
+          //writeLogToCSV(past_user.username, totalTime, today);
           savetoLogs(
             past_user.username,
             formatTime(totalTime),
@@ -174,7 +174,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
 
         // FOR CHECKING ONLY
         // past_user.username
-        writeLogToCSV(past_user.username, totalTime, today);
+        //writeLogToCSV(past_user.username, totalTime, today);
         savetoLogs(
           past_user.username,
           formatTime(totalTime),
@@ -198,7 +198,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
 
         // FOR CHECKING ONLY
         // past_user.username
-        writeLogToCSV(past_user.username, totalTime, today);
+        //writeLogToCSV(past_user.username, totalTime, today);
         savetoLogs(
           past_user.username,
           formatTime(totalTime),
