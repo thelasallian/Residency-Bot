@@ -1,9 +1,4 @@
 // for production
-const express = require("express");
-const app = express();
-app.get("/", (req, res) => {
-	res.send("Bot server is active.");
-});
 
 // Require connection to commands
 const fs = require('node:fs');
@@ -118,7 +113,7 @@ client.on("voiceStateUpdate", (past, present) => {
 					console.log("Total time: ", formatTime(totalTime));
 
 					//store time in logs
-					writeLogToCSV(past_user.username, totalTime);
+					//writeLogToCSV(past_user.username, totalTime);
 				}
 				}
 				
@@ -137,5 +132,3 @@ client.once(Events.ClientReady, readyClient => {
 
 // Log in to Discord with your client's token
 client.login(BOT_TOKEN);
-
-app.listen(3000, () => console.log("Server started at port 3000"));
