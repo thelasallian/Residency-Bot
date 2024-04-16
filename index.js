@@ -5,8 +5,10 @@ const { Collection } = require("discord.js");
 
 // Require the necessary discord.js classes
 const { Client, Events, GatewayIntentBits } = require("discord.js");
-const { BOT_TOKEN } = require("./config.json");
+//const { BOT_TOKEN } = require("./config.json");
 const { savetoSheet } = require("./toSheet.js");
+require("dotenv").config();
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
 // Create a new client instance
 const client = new Client({ intents: 128 }); // REFER TO https://ziad87.net/intents/
