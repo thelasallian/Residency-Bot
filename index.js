@@ -1,12 +1,22 @@
+// for production
+const express = require("express");
+const app = express();
+app.get("/", (req, res) => {
+	res.send("The Residency bot server is active.");
+  });
 // Require connection to commands
 const fs = require("node:fs");
 const path = require("node:path");
 const { Collection } = require("discord.js");
 
 // Require the necessary discord.js classes
-const { Client, Events, GatewayIntentBits } = require("discord.js");
-const { BOT_TOKEN } = require("./config.json");
 const { savetoSheet, savetoLogs } = require("./toSheet.js");
+const { Client, Events, GatewayIntentBits } = require('discord.js');
+//const { BOT_TOKEN } = require('./config.json');
+
+const dotenv = require('dotenv')
+dotenv.config()
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
 // Create a new client instance
 const client = new Client({ intents: 128 }); // REFER TO https://ziad87.net/intents/
@@ -218,3 +228,5 @@ client.once(Events.ClientReady, (readyClient) => {
 
 // Log in to Discord with your client's token
 client.login(BOT_TOKEN);
+
+app.listen(3000, () => console.log("Server started at port 3000"));
