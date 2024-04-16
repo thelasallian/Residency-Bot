@@ -42,6 +42,30 @@ async function readSheet() {
   }
 }
 
+async function readLogs() {
+  try {
+    // google sheet instance
+    const sheetInstance = await google.sheets({
+      version: "v4",
+      auth: googleAuth,
+    });
+    // read data in the range in a sheet
+    const infoObjectFromSheet = await sheetInstance.spreadsheets.values.get({
+      auth: googleAuth,
+      spreadsheetId: googleSheetId,
+      range: `logs!A:C`,
+    });
+
+    const valuesFromSheet = infoObjectFromSheet.data.values;
+
+    // store values to array
+    let sheetData = sheetToArray(valuesFromSheet);
+    return sheetData;
+  } catch (err) {
+    console.log("readLogs func() error", err);
+  }
+}
+
 function getCurrentDate() {
   const currentDate = new Date();
   return currentDate.toLocaleDateString("en-US", {
@@ -164,13 +188,19 @@ async function updateSheet(row, index) {
 module.exports = {
   savetoSheet: async function savetoSheet() {
     try {
-      const csvData = fs.readFileSync("./logs.csv", "utf-8"); // Load CSV data from file
-      const rows = csvData.split("\n").map((row) => row.split(",")); // CSV to aray
+      // const csvData = fs.readFileSync("./logs.csv", "utf-8"); // Load CSV data from file
 
+      let logs = await readLogs();
+      console.log("from sheets: ", logs);
+
+      // Converting array of arrays to a format similar to CSV rows
+      const logsFormat = logs.map((row) => row.join(",")).join("\n");
+
+      // Splitting the CSV-like string back into rows and columns
+      const rows = logsFormat.split("\n").map((row) => row.split(",")); // CSV to aray
       dateToday = getCurrentDate().toString(); // get current date and turn to string to compare later
       console.log(dateToday);
 
-      rows.pop(); // remove empty string at the end
       const uniqueValues = [
         ...new Set(
           rows
@@ -205,8 +235,42 @@ module.exports = {
       updateRecord(data, sheetData);
       return rows;
     } catch (err) {
-      console.log("errong reading logs to array", err);
+      console.log("error save to sheets", err);
       return [];
+    }
+  },
+
+  savetoLogs: async function saveToLogs(user, time, today, callback) {
+    try {
+      let logs = await readLogs();
+      let logs_length = logs.length;
+      let index = logs_length + 1;
+      let row = [user, time, today];
+
+      console.log("row read: ", logs_length);
+      // console.log("row to save: ", row);
+
+      // google sheet instance
+      const sheetInstance = await google.sheets({
+        version: "v4",
+        auth: googleAuth,
+      });
+
+      await sheetInstance.spreadsheets.values.update({
+        auth: googleAuth,
+        spreadsheetId: googleSheetId,
+        range: `logs!A${index}:C`,
+        valueInputOption: "RAW",
+        resource: {
+          values: [row],
+        },
+      });
+
+      console.log("Log entry added to logs in sheets");
+      callback(null);
+    } catch (err) {
+      console.log("error save to logs", err);
+      callback(err);
     }
   },
 };

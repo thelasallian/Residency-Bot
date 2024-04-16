@@ -6,7 +6,7 @@ const { Collection } = require("discord.js");
 // Require the necessary discord.js classes
 const { Client, Events, GatewayIntentBits } = require("discord.js");
 const { BOT_TOKEN } = require("./config.json");
-const { savetoSheet } = require("./toSheet.js");
+const { savetoSheet, savetoLogs } = require("./toSheet.js");
 
 // Create a new client instance
 const client = new Client({ intents: 128 }); // REFER TO https://ziad87.net/intents/
@@ -79,16 +79,14 @@ function formatTime(milliseconds) {
 }
 
 // Function to write logs to CSV file / FOR CHECKING ONLY
-function writeLogToCSV(username, totalTime, date, callback) {
+function writeLogToCSV(username, totalTime, date) {
   let logString = username + "," + formatTime(totalTime) + "," + date + "\n";
 
   fs.appendFile("logs.csv", logString, (err) => {
     if (err) {
       console.error("Error appending data to file:", err);
-      callback(err); // Call the callback with the error
     } else {
       console.log("Log entry added to logs.csv");
-      callback(null); // Call the callback with no error
     }
   });
 }
@@ -138,20 +136,22 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
           console.log("Total time: ", formatTime(totalTime));
           const today = getCurrentDate();
 
-          //store time in logs
-          //  ORIGINAL - change later
-          //  writeLogToCSV(past_user.username, totalTime);
-
           // FOR CHECKING ONLY
           // past_user.username
-          writeLogToCSV(past_user.username, totalTime, today, (error) => {
-            if (error) {
-              console.error("Callback error:", error);
-            } else {
-              // run after async writing on logs (latest log should be recorded)
-              savetoSheet();
+          writeLogToCSV(past_user.username, totalTime, today);
+          savetoLogs(
+            past_user.username,
+            formatTime(totalTime),
+            today,
+            (error) => {
+              if (error) {
+                console.error("Callback error:", error);
+              } else {
+                // run after async writing on logs (latest log should be recorded)
+                savetoSheet();
+              }
             }
-          });
+          );
         }
       }
     } else if (present_channel != null && past_channel == 1214250569125077003) {
@@ -162,20 +162,22 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
         console.log("Total time: ", formatTime(totalTime));
         const today = getCurrentDate();
 
-        //store time in logs
-        //  ORIGINAL - change later
-        //  writeLogToCSV(past_user.username, totalTime);
-
         // FOR CHECKING ONLY
         // past_user.username
-        writeLogToCSV(past_user.username, totalTime, today, (error) => {
-          if (error) {
-            console.error("Callback error:", error);
-          } else {
-            // run after async writing on logs (latest log should be recorded)
-            savetoSheet();
+        writeLogToCSV(past_user.username, totalTime, today);
+        savetoLogs(
+          past_user.username,
+          formatTime(totalTime),
+          today,
+          (error) => {
+            if (error) {
+              console.error("Callback error:", error);
+            } else {
+              // run after async writing on logs (latest log should be recorded)
+              savetoSheet();
+            }
           }
-        });
+        );
       }
     } else if (present_channel == 1214250569125077003 && past_channel != null) {
       console.log("RPSENT");
@@ -184,20 +186,22 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
         console.log("Total time: ", formatTime(totalTime));
         const today = getCurrentDate();
 
-        //store time in logs
-        //  ORIGINAL - change later
-        //  writeLogToCSV(past_user.username, totalTime);
-
         // FOR CHECKING ONLY
         // past_user.username
-        writeLogToCSV(past_user.username, totalTime, today, (error) => {
-          if (error) {
-            console.error("Callback error:", error);
-          } else {
-            // run after async writing on logs (latest log should be recorded)
-            savetoSheet();
+        writeLogToCSV(past_user.username, totalTime, today);
+        savetoLogs(
+          past_user.username,
+          formatTime(totalTime),
+          today,
+          (error) => {
+            if (error) {
+              console.error("Callback error:", error);
+            } else {
+              // run after async writing on logs (latest log should be recorded)
+              savetoSheet();
+            }
           }
-        });
+        );
       }
     }
   }
