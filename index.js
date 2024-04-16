@@ -1,5 +1,9 @@
 // for production
-
+const express = require("express");
+const app = express();
+app.get("/", (req, res) => {
+	res.send("The Residency bot server is active.");
+  });
 // Require connection to commands
 const fs = require('node:fs');
 const path = require('node:path');
@@ -132,3 +136,5 @@ client.once(Events.ClientReady, readyClient => {
 
 // Log in to Discord with your client's token
 client.login(BOT_TOKEN);
+
+app.listen(3000, () => console.log("Server started at port 3000"));
