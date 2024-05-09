@@ -125,22 +125,23 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
   console.log("present", present.channelId);
 
   // TODO: activate only if user joined/left voice channel 'Residency'
-  if (true) {
-    if (present_channel != null) {
+  
+    if (present_channel != null && (present.channelId == 1214250569125077003 || present.channelId == 1238149023135957044)) 
+    {
       // user joins a voice channel
       console.log(present_user.username, "joined a voice channel");
 
       // User joins RESIDENCY voice channel
-      if (present.channelId == 1214250569125077003) {
+      if (present.channelId == 1214250569125077003 || present.channelId == 1238149023135957044) {
         console.log(present_user.username, "joined a RESIDENCY voice channel");
         users.set(user.id, new Date().getTime());
       }
-    } else if (present_channel == null) {
+    } else if (present_channel == null || (past.channelId == 1214250569125077003 || past.channelId == 1238149023135957044)) {
       // user left a voice channel
       console.log(past_user.username, "left the voice channel");
 
       // User left RESIDENCY voice channel
-      if (past.channelId == 1214250569125077003) {
+      if (past.channelId == 1214250569125077003 || past.channelId == 1238149023135957044) {
         if (users.get(user.id) != undefined) {
           const totalTime = new Date().getTime() - users.get(user.id);
           console.log("Total time: ", formatTime(totalTime));
@@ -164,57 +165,7 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
           );
         }
       }
-    } else if (present_channel != null && past_channel == 1214250569125077003) {
-      console.log("HELLO");
-
-      if (users.get(user.id) != undefined) {
-        const totalTime = new Date().getTime() - users.get(user.id);
-        console.log("Total time: ", formatTime(totalTime));
-        const today = getCurrentDate();
-
-        // FOR CHECKING ONLY
-        // past_user.username
-        //writeLogToCSV(past_user.username, totalTime, today);
-        savetoLogs(
-          past_user.username,
-          formatTime(totalTime),
-          today,
-          (error) => {
-            if (error) {
-              console.error("Callback error:", error);
-            } else {
-              // run after async writing on logs (latest log should be recorded)
-              savetoSheet();
-            }
-          }
-        );
-      }
-    } else if (present_channel == 1214250569125077003 && past_channel != null) {
-      console.log("RPSENT");
-      if (users.get(user.id) != undefined) {
-        const totalTime = new Date().getTime() - users.get(user.id);
-        console.log("Total time: ", formatTime(totalTime));
-        const today = getCurrentDate();
-
-        // FOR CHECKING ONLY
-        // past_user.username
-        //writeLogToCSV(past_user.username, totalTime, today);
-        savetoLogs(
-          past_user.username,
-          formatTime(totalTime),
-          today,
-          (error) => {
-            if (error) {
-              console.error("Callback error:", error);
-            } else {
-              // run after async writing on logs (latest log should be recorded)
-              savetoSheet();
-            }
-          }
-        );
-      }
-    }
-  }
+    } 
 });
 
 // --- end: activate when user joins/leaves a voice channel --- //
