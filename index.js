@@ -198,10 +198,10 @@ client.on(Events.VoiceStateUpdate, async (past, present) => {
         //writeLogToCSV(past_user.username, totalTime, today);
         savetoLogs(
           past_user.username,
+          today,
           formatTimestamp(users.get(user.id)),
           formatTimestamp(timeOut),
           formatTime(totalTime),
-          today,
           (error) => {
             if (error) {
               console.error("Callback error:", error);

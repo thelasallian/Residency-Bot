@@ -114,8 +114,8 @@ function storeDataToday(data, logs, uniqueValues) {
 
     for (const data of logs) {
       var member = data[0];
-      let date = data[4];
-      let memberDuration = data[3];
+      let date = data[1];
+      let memberDuration = data[4];
 
       if (member == value && value != "" && date == dateToday) {
         //convert time to seconds
@@ -160,7 +160,7 @@ async function queryRecord(todayData, sheet) {
     }
     if (!memberFound) {
       console.log(`${member} successfully added to sheet`);
-      updateSheet(data, sheet.length + 1 + newMembers); // plus 1 to jump to next empty cell in sheet
+      updateSheet(data, sheet.length + 1 + newMembers, member); // plus 1 to jump to next empty cell in sheet
       newMembers += 1; // tracks actual sheet length while on the process of adding new members
     }
   }
@@ -218,9 +218,9 @@ module.exports = {
           logs
             .filter(
               (row) =>
-                typeof row[4] !== "undefined" &&
-                row[4].trim() === dateToday.trim() &&
-                row[4].trim() !== ""
+                typeof row[1] !== "undefined" &&
+                row[1].trim() === dateToday.trim() &&
+                row[1].trim() !== ""
             )
             .map((row) => row[0])
         ),
@@ -248,10 +248,10 @@ module.exports = {
 
   savetoLogs: async function saveToLogs(
     user,
+    today,
     timein,
     timeout,
     time,
-    today,
     callback
   ) {
     try {
@@ -263,7 +263,7 @@ module.exports = {
         index = logs_length + 1;
       }
 
-      let row = [user, timein, timeout, time, today];
+      let row = [user, today, timein, timeout, time];
 
       // google sheet instance
       const sheetInstance = await google.sheets({
