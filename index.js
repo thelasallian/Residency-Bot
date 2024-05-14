@@ -133,6 +133,7 @@ function getCurrentDate() {
     month: "numeric",
     day: "numeric",
     year: "numeric",
+    timeZone: "Asia/Manila",
   });
 }
 
