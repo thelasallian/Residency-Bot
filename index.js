@@ -97,10 +97,18 @@ function formatTimestamp(timestamp) {
   // Create a new Date object from the seconds
   const dateObj = new Date(sec * 1000);
 
+  // Calculate the Philippine time offset (UTC+8) in minutes
+  const philippinesOffset = 8 * 60;
+
+  // Adjust the date object to Philippine time
+  const philippineTime = new Date(
+    dateObj.getTime() + philippinesOffset * 60000
+  );
+
   // Extract hours, minutes, and seconds (zero-padded for two digits)
-  const hours = dateObj.getHours().toString().padStart(2, "0");
-  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-  const seconds = dateObj.getSeconds().toString().padStart(2, "0");
+  const hours = philippineTime.getUTCHours().toString().padStart(2, "0");
+  const minutes = philippineTime.getUTCMinutes().toString().padStart(2, "0");
+  const seconds = philippineTime.getUTCSeconds().toString().padStart(2, "0");
 
   // Format the time string (e.g., 08:49:04)
   return `${hours}:${minutes}:${seconds}`;
